@@ -7,8 +7,7 @@ import (
 )
 
 func CreatePurchase(obj models.Purchase) error {
-	postgres.CreatePurchase(obj)
-	return nil
+	return postgres.CreatePurchase(obj)
 }
 
 func GetPurchases() error {

@@ -11,7 +11,3 @@ func CreatePurchase(obj models.Purchase) error {
 	}
 	return nil
 }
-
-func AddLinkedFund(fundId, purchaseId uint) error {
-	return nil
-}

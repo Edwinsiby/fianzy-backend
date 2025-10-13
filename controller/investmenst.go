@@ -9,8 +9,7 @@ import (
 )
 
 func CreateInvestment(obj models.Investment) error {
-	postgres.CreateInvestment(obj)
-	return nil
+	return postgres.CreateInvestment(obj)
 }
 
 func GetInvestments(c *gin.Context) error {

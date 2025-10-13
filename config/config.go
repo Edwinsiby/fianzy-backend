@@ -1,21 +1,42 @@
 package config
 
 import (
+	"fianzy/models"
 	"fmt"
 	"log"
+	"os"
 
-	"gorm.io/driver/sqlite"
+	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
 func ConnectDB() {
-	var err error
-	DB, err = gorm.Open(sqlite.Open("fianzy.db"), &gorm.Config{})
+	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("❌ Failed to connect database: ", err)
+		log.Println("⚠️  No .env file found, using system env")
 	}
 
-	fmt.Println("✅ Database connected successfully!")
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		log.Fatal("❌ DATABASE_URL is not set")
+	}
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("❌ Failed to connect to database: ", err)
+	}
+
+	db.AutoMigrate(
+		&models.Purchase{},
+		&models.Investment{},
+		&models.Lend{},
+		&models.Borrow{},
+		&models.Bank{},
+	)
+
+	DB = db
+	fmt.Println("✅ Connected to Postgres DB")
 }

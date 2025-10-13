@@ -6,38 +6,42 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateCredit(c *gin.Context) {
+func CreateTransactions(c *gin.Context) {
 	obj := models.Transaction{}
-	if err := c.ShouldBindQuery(&obj); err != nil {
-		c.JSON(400, gin.H{"message": "Invalid query"})
+	if err := c.ShouldBindJSON(&obj); err != nil {
+		c.JSON(400, gin.H{"message": "Invalid JSON body", "error": err.Error()})
+		return
 	}
 	switch obj.Type {
 	case "purchase":
-		CreatePurchase(*obj.Purchase)
+		if err := CreatePurchase(*obj.Purchase); err != nil {
+			c.JSON(500, err)
+			return
+		}
 	case "investment":
-		CreateInvestment(*obj.Investment)
+		if err := CreateInvestment(*obj.Investment); err != nil {
+			c.JSON(500, err)
+			return
+		}
 	case "lend":
-		CreateLend(*obj.Lend)
+		if err := CreateLend(*obj.Lend); err != nil {
+			c.JSON(500, err)
+			return
+		}
 	case "borrow":
-		CreateBorrow(*obj.Borrow)
+		if err := CreateBorrow(*obj.Borrow); err != nil {
+			c.JSON(500, err)
+			return
+		}
+	case "bank":
+		if err := CreateBank(*obj.Bank); err != nil {
+			c.JSON(500, err)
+			return
+		}
+	default:
+		c.JSON(400, gin.H{"message": "Invalid query"})
+		return
 	}
 	c.JSON(200, gin.H{"message": "Credit created successfully"})
-}
-
-func CreateDebit(c *gin.Context) {
-	obj := models.Transaction{}
-	if err := c.ShouldBindQuery(&obj); err != nil {
-		c.JSON(400, gin.H{"message": "Invalid query"})
-	}
-	switch obj.Type {
-	case "purchase":
-		CreatePurchase(*obj.Purchase)
-	case "investment":
-		CreateInvestment(*obj.Investment)
-	case "lend":
-		CreateLend(*obj.Lend)
-	case "borrow":
-		CreateBorrow(*obj.Borrow)
-	}
-	c.JSON(200, gin.H{"message": "Debit created successfully"})
+	return
 }
