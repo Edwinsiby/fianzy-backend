@@ -30,11 +30,7 @@ func ConnectDB() {
 	}
 
 	db.AutoMigrate(
-		&models.Purchase{},
-		&models.Investment{},
-		&models.Lend{},
-		&models.Borrow{},
-		&models.Bank{},
+		&models.Transaction{},
 	)
 
 	DB = db
